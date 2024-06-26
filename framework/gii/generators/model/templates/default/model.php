@@ -50,7 +50,7 @@
 <?php endforeach; ?>
 <?php endif; ?>
  */
-class <?php echo $modelClass; ?> extends <?php echo $this->baseClass."\n"; ?>
+class <?php echo $modelClass; ?> extends <?php echo "ActiveRecord\n"; #$this->baseClass."\n"; ?>
 {
 	/**
 	 * @return string the associated database table name
@@ -72,7 +72,6 @@ class <?php echo $modelClass; ?> extends <?php echo $this->baseClass."\n"; ?>
 			<?php echo $rule.",\n"; ?>
 <?php endforeach; ?>
 			// The following rule is used by search().
-			// @todo Please remove those attributes that should not be searched.
 			array('<?php echo implode(', ', array_keys($columns)); ?>', 'safe', 'on'=>'search'),
 		);
 	}
@@ -117,8 +116,6 @@ class <?php echo $modelClass; ?> extends <?php echo $this->baseClass."\n"; ?>
 	 */
 	public function search()
 	{
-		// @todo Please modify the following code to remove attributes that should not be searched.
-
 		$criteria=new CDbCriteria;
 
 <?php
@@ -139,7 +136,6 @@ foreach($columns as $name=>$column)
 			'criteria'=>$criteria,
 		));
 	}
-
 <?php if($connectionId!='db'):?>
 	/**
 	 * @return CDbConnection the database connection used for this class
@@ -148,16 +144,5 @@ foreach($columns as $name=>$column)
 	{
 		return Yii::app()-><?php echo $connectionId ?>;
 	}
-
 <?php endif?>
-	/**
-	 * Returns the static model of the specified AR class.
-	 * Please note that you should have this exact method in all your CActiveRecord descendants!
-	 * @param string $className active record class name.
-	 * @return <?php echo $modelClass; ?> the static model class
-	 */
-	public static function model($className=__CLASS__)
-	{
-		return parent::model($className);
-	}
 }

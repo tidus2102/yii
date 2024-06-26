@@ -318,8 +318,11 @@ class CDbCommand extends CComponent
 		if($this->_connection->enableParamLogging && ($pars=array_merge($this->_paramLog,$params))!==array())
 		{
 			$p=array();
-			foreach($pars as $name=>$value)
-				$p[$name]=$name.'='.var_export($value,true);
+			foreach($pars as $name=>$value) {
+                //tidus
+                //$p[$name]=$name.'='.var_export($value,true);
+                $p[$name]=var_export($value,true);
+            }
 			$par='. Bound with ' .implode(', ',$p);
 		}
 		else
@@ -327,8 +330,15 @@ class CDbCommand extends CComponent
 		Yii::trace('Executing SQL: '.$this->getText().$par,'system.db.CDbCommand');
 		try
 		{
-			if($this->_connection->enableProfiling)
-				Yii::beginProfile('system.db.CDbCommand.execute('.$this->getText().$par.')','system.db.CDbCommand.execute');
+			if($this->_connection->enableProfiling) {
+                //tidus
+                //Yii::beginProfile('system.db.CDbCommand.execute('.$this->getText().$par.')','system.db.CDbCommand.execute');
+                if (count($p) > 0)
+                    $sql = strtr($this->getText(), $p);
+                else
+                    $sql = $this->getText();
+                Yii::beginProfile('CDbCommand.query{{' . $sql . '}}','system.db.CDbCommand.execute');
+            }
 
 			$this->prepare();
 			if($params===array())
@@ -338,7 +348,9 @@ class CDbCommand extends CComponent
 			$n=$this->_statement->rowCount();
 
 			if($this->_connection->enableProfiling)
-				Yii::endProfile('system.db.CDbCommand.execute('.$this->getText().$par.')','system.db.CDbCommand.execute');
+                //tidus
+                //Yii::endProfile('system.db.CDbCommand.execute('.$this->getText().$par.')','system.db.CDbCommand.execute');
+                Yii::endProfile('CDbCommand.query{{' . $sql . '}}','system.db.CDbCommand.execute');
 
 			return $n;
 		}
@@ -469,13 +481,21 @@ class CDbCommand extends CComponent
 	 */
 	private function queryInternal($method,$mode,$params=array())
 	{
+        //tidus
+        /*if (strpos($this->getText(), ':ycp0') !== false) {
+            $e = new \Exception;
+            error_log($e->getTraceAsString());
+        }*/
+
 		$params=array_merge($this->params,$params);
 
 		if($this->_connection->enableParamLogging && ($pars=array_merge($this->_paramLog,$params))!==array())
 		{
 			$p=array();
 			foreach($pars as $name=>$value)
-				$p[$name]=$name.'='.var_export($value,true);
+                //tidus
+                //$p[$name]=$name.'='.var_export($value,true);
+                $p[$name]=var_export($value,true);
 			$par='. Bound with '.implode(', ',$p);
 		}
 		else
@@ -500,8 +520,15 @@ class CDbCommand extends CComponent
 
 		try
 		{
-			if($this->_connection->enableProfiling)
-				Yii::beginProfile('system.db.CDbCommand.query('.$this->getText().$par.')','system.db.CDbCommand.query');
+			if($this->_connection->enableProfiling) {
+                //tidus
+                //Yii::beginProfile('system.db.CDbCommand.query('.$this->getText().$par.')','system.db.CDbCommand.query');
+                if (count($p) > 0)
+                    $sql = strtr($this->getText(), $p);
+                else
+                    $sql = $this->getText();
+                Yii::beginProfile('CDbCommand.query{{' . $sql . '}}','system.db.CDbCommand.query');
+            }
 
 			$this->prepare();
 			if($params===array())
@@ -520,7 +547,9 @@ class CDbCommand extends CComponent
 			}
 
 			if($this->_connection->enableProfiling)
-				Yii::endProfile('system.db.CDbCommand.query('.$this->getText().$par.')','system.db.CDbCommand.query');
+                //tidus
+                //Yii::endProfile('system.db.CDbCommand.query('.$this->getText().$par.')','system.db.CDbCommand.query');
+                Yii::endProfile('CDbCommand.query{{' . $sql . '}}','system.db.CDbCommand.query');
 
 			if(isset($cache,$cacheKey))
 				$cache->set($cacheKey, array($result), $this->_connection->queryCachingDuration, $this->_connection->queryCachingDependency);
@@ -1290,8 +1319,18 @@ class CDbCommand extends CComponent
 	 * @return integer number of rows affected by the execution.
 	 * @since 1.1.6
 	 */
-	public function update($table, $columns, $conditions='', $params=array())
+    //tidus
+    //public function update($table, $columns, $conditions='', $params=array())
+    public function update($table, $columns, $conditions='', $params=array(), $returnUpdatedIds=false)
 	{
+        //tidus
+        $willUpdateIds = [];
+        if ($returnUpdatedIds)
+            $willUpdateIds = $this->select('id')
+                ->from($table)
+                ->where($conditions, $params)
+                ->queryColumn();
+
 		$lines=array();
 		foreach($columns as $name=>$value)
 		{
@@ -1310,7 +1349,12 @@ class CDbCommand extends CComponent
 		$sql='UPDATE ' . $this->_connection->quoteTableName($table) . ' SET ' . implode(', ', $lines);
 		if(($where=$this->processConditions($conditions))!='')
 			$sql.=' WHERE '.$where;
-		return $this->setText($sql)->execute($params);
+        //tidus
+        //return $this->setText($sql)->execute($params);
+        $rowCount = $this->setText($sql)->execute($params);
+        if ($returnUpdatedIds)
+            return $willUpdateIds;
+        return $rowCount;
 	}
 
 	/**

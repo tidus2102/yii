@@ -116,6 +116,10 @@ class GiiModule extends CWebModule
 		parent::init();
 		Yii::setPathOfAlias('gii',dirname(__FILE__));
 		Yii::app()->setComponents(array(
+            //tidus
+            'clientScript' => array(        //using original CClientScript
+                'class' => 'CClientScript',
+            ),
 			'errorHandler'=>array(
 				'class'=>'CErrorHandler',
 				'errorAction'=>$this->getId().'/default/error',

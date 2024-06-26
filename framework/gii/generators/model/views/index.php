@@ -37,7 +37,9 @@ $('#{$class}_tableName').bind('keyup change', function(){
 			if(this.length>0)
 				modelClass+=this.substring(0,1).toUpperCase()+this.substring(1);
 		});
-		model.val(modelClass);
+		//tidus
+        //model.val(modelClass);
+		model.val('Yii' + modelClass);
 	}
 });
 $('.form .row.model-class').toggle($('#{$class}_tableName').val().substring($('#{$class}_tableName').val().length-1)!='*');

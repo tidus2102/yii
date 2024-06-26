@@ -222,6 +222,14 @@ class CActiveDataProvider extends CDataProvider
 	 */
 	protected function calculateTotalItemCount()
 	{
+        //tidus
+        $model = get_class($this->model);
+        $hashedKey = md5($this->getCountCriteria()->condition);
+        $cacheKey = "$model.count.$hashedKey";
+        $cachedCount = Util::getCache($cacheKey);
+        if ($cachedCount !== false)
+            return $cachedCount;
+
 		$baseCriteria=$this->model->getDbCriteria(false);
 		if($baseCriteria!==null)
 			$baseCriteria=clone $baseCriteria;

@@ -125,7 +125,9 @@ class CDbCommandBuilder extends CComponent
 			$sql=$this->applyCondition($sql,$criteria->condition);
 			$sql=$this->applyGroup($sql,$criteria->group);
 			$sql=$this->applyHaving($sql,$criteria->having);
-			$sql="SELECT COUNT(*) FROM ($sql) sq";
+            //tidus
+            //$sql="SELECT COUNT(*) FROM ($sql) sq";
+            $sql="SELECT COUNT(id) FROM ($sql) sq";
 		}
 		else
 		{
@@ -145,7 +147,9 @@ class CDbCommandBuilder extends CComponent
 				$sql="SELECT COUNT(DISTINCT $pk)";
 			}
 			else
-				$sql="SELECT COUNT(*)";
+                //tidus
+                //$sql="SELECT COUNT(*)";
+                $sql="SELECT COUNT(t.id)";
 			$sql.=" FROM {$table->rawName} $alias";
 			$sql=$this->applyJoin($sql,$criteria->join);
 			$sql=$this->applyCondition($sql,$criteria->condition);
@@ -512,8 +516,20 @@ class CDbCommandBuilder extends CComponent
 	{
 		if($limit>=0)
 			$sql.=' LIMIT '.(int)$limit;
-		if($offset>0)
-			$sql.=' OFFSET '.(int)$offset;
+        //tidus
+        //if($offset>0)
+        //    $sql.=' OFFSET '.(int)$offset;
+        if($offset>0) {
+            $sql.=' OFFSET '.(int)$offset;
+
+            $pos = strpos($sql, 'FROM ');
+            $pos2 = strpos($sql, '`t`', $pos);
+            $table = substr($sql, $pos + strlen('FROM '), $pos2 - $pos - strlen('FROM ') - 1);
+            $select = substr($sql, 0, $pos - 1);
+            $from_to_end = substr($sql, $pos);
+            $new_sql = "$select FROM (SELECT t.id $from_to_end) q JOIN $table t ON t.id = q.id";
+            $sql = $new_sql;
+        }
 		return $sql;
 	}
 

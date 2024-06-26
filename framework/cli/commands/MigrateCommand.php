@@ -599,7 +599,7 @@ EOD;
 
 class {ClassName} extends CDbMigration
 {
-	public function up()
+	/*public function up()
 	{
 	}
 
@@ -607,9 +607,8 @@ class {ClassName} extends CDbMigration
 	{
 		echo "{ClassName} does not support migration down.\\n";
 		return false;
-	}
+	}*/
 
-	/*
 	// Use safeUp/safeDown to do migration with transaction
 	public function safeUp()
 	{
@@ -618,7 +617,6 @@ class {ClassName} extends CDbMigration
 	public function safeDown()
 	{
 	}
-	*/
 }
 EOD;
 	}

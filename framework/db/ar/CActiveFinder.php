@@ -741,7 +741,9 @@ class CJoinElement
 			$query->orders = array();
 			$command=$query->createCommand($this->_builder);
 			$sql=$command->getText();
-			$sql="SELECT COUNT(*) FROM ({$sql}) sq";
+            //tidus
+            //$sql="SELECT COUNT(*) FROM ({$sql}) sq";
+            $sql="SELECT COUNT(id) FROM ({$sql}) sq";
 			$command->setText($sql);
 			$command->params=$query->params;
 			return $command->queryScalar();

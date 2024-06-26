@@ -80,6 +80,11 @@ class CProfileLogRoute extends CWebLogRoute
 		if(!($app instanceof CWebApplication) || $app->getRequest()->getIsAjaxRequest())
 			return;
 
+        //tidus
+        if (defined('IGNORE_DEBUG_PROFILING_URLS')
+            && in_array(parse_url($app->request->url)['path'], IGNORE_DEBUG_PROFILING_URLS))
+            return;
+
 		if($this->getReport()==='summary')
 			$this->displaySummary($logs);
 		else

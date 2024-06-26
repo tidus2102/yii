@@ -108,7 +108,9 @@ class ModelCode extends CCodeModel
 				'connectionId'=>$this->connectionId,
 			);
 			$this->files[]=new CCodeFile(
-				Yii::getPathOfAlias($this->modelPath).'/'.$className.'.php',
+                //tidus
+                //Yii::getPathOfAlias($this->modelPath).'/'.$className.'.php',
+                Yii::getPathOfAlias($this->modelPath).'/yii/'.$className.'.php',
 				$this->render($templatePath.'/model.php', $params)
 			);
 		}
@@ -356,7 +358,13 @@ class ModelCode extends CCodeModel
 				}
 			}
 		}
-		return $relations;
+        //tidus
+        //return $relations;
+        $newRelations = [];
+        foreach ($relations as $className => $modelRelations) {
+            $newRelations[$className] = json_decode(str_replace('Yii', '', json_encode($modelRelations)), true);
+        }
+		return $newRelations;
 	}
 
 	/**
