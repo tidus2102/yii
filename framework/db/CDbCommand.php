@@ -151,6 +151,15 @@ class CDbCommand extends CComponent
 		return $this;
 	}
 
+	//tidus
+	/**
+	 * @return _paramLog
+	 */
+	public function getParamLog()
+	{
+		return $this->_paramLog;
+	}
+
 	/**
 	 * @return string the SQL statement to be executed
 	 */
@@ -523,7 +532,7 @@ class CDbCommand extends CComponent
 			if($this->_connection->enableProfiling) {
                 //tidus
                 //Yii::beginProfile('system.db.CDbCommand.query('.$this->getText().$par.')','system.db.CDbCommand.query');
-                if (count($p) > 0)
+                if (isset($p) && count($p) > 0)
                     $sql = strtr($this->getText(), $p);
                 else
                     $sql = $this->getText();
